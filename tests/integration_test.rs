@@ -8,12 +8,10 @@ fn create_temp_dir(name: &str) -> PathBuf {
     let timestamp = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
-        .as_millis();
-    let temp_dir = std::env::temp_dir().join(format!("integration_test_{}_{}", name, timestamp));
-    if temp_dir.exists() {
-        fs::remove_dir_all(&temp_dir).unwrap();
-    }
-    fs::create_dir(&temp_dir).unwrap();
+        .as_nanos();
+    let random: u32 = rand::random();
+    let temp_dir = std::env::temp_dir().join(format!("integration_test_{}_{}_{}", name, timestamp, random));
+    fs::create_dir_all(&temp_dir).unwrap();
     temp_dir
 }
 
