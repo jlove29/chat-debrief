@@ -2,7 +2,7 @@
 
 ## Overview
 
-The async research feature adds proactive, intelligent research capabilities to chat-debrief. Instead of just summarizing conversations, the system now actively researches open questions, checks for updates, and finds connections between topics.
+The async research feature transforms `chat-debrief` from a reactive summarization tool into a proactive research assistant. It analyzes your debriefs to identify knowledge gaps, checks for updates on mentioned topics, and finds connections across different subjects—then automatically researches these areas and saves high-confidence insights to `RESEARCH.md`.
 
 ## Features
 
@@ -74,12 +74,8 @@ cargo run --bin async_researcher data
 3. **Research Execution**
    - Each task is researched using the Gemini API
    - Results include findings, confidence score, and sources
-   - Only high-confidence results (≥ 6/10) are included
 
-4. **Insight Integration**
-   - Research insights are formatted as markdown
-   - Appended to debrief under "🔍 Research Insights" section
-   - Includes context, findings, sources, and confidence scores
+4. **Insight Storage**: Only high-confidence research results (confidence ≥ 6/10) are saved to `RESEARCH.md` to maintain quality and avoid clutter.
 
 ### Research Task Types
 
@@ -111,14 +107,13 @@ pub struct ResearchResult {
 
 ## Example Output
 
-When research insights are added to a debrief, they appear like this:
+The research insights are formatted and saved to a separate `RESEARCH.md` file in your topic directory:
 
 ```markdown
----
-
 ## 🔍 Research Insights
 
-*The following insights were automatically researched based on open questions and topics in your conversations.*
+*The following insights were automatically researched based on your debrief.*
+*Generated: 2026-01-11*
 
 ### 💡 How to fix Rust async runtime error with tokio?
 

@@ -42,6 +42,32 @@ Example:
 cargo run -- data/coder_agent_vim
 ```
 
+### Async Research (Optional)
+
+The tool can automatically research open questions and topics from your debriefs:
+
+```bash
+# Generate debrief AND run research in one command
+cargo run --bin read_files -- <directory_path> --research
+
+# Or run research separately on an existing debrief
+cargo run --bin async_researcher <data_directory> <topic_name>
+```
+
+Examples:
+```bash
+# Integrated: process conversations + research
+cargo run --bin read_files -- data/hamstring_injury --research
+
+# Standalone: research existing debrief
+cargo run --bin async_researcher data hamstring_injury
+
+# Cross-topic analysis (finds connections between topics)
+cargo run --bin async_researcher data
+```
+
+Research insights are saved to `RESEARCH.md` in the topic directory. See [ASYNC_RESEARCH.md](ASYNC_RESEARCH.md) and [QUICKSTART_RESEARCH.md](QUICKSTART_RESEARCH.md) for details.
+
 ## Testing
 
 This project includes comprehensive unit and integration tests.
@@ -75,6 +101,12 @@ Run a specific integration test:
 ```bash
 cargo test test_integration_hamstring_injury -- --ignored --nocapture
 cargo test test_integration_hard_drive -- --ignored --nocapture
+```
+
+Test the async research functionality:
+```bash
+cargo test test_research_hard_drive -- --ignored --nocapture
+cargo test test_research_all_directories -- --ignored --nocapture
 ```
 
 ## Autorater Module

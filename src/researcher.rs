@@ -221,7 +221,7 @@ pub fn format_research_insights(results: &[ResearchResult]) -> String {
     output
 }
 
-/// Runs async research on a debrief and appends insights
+/// Runs async research on a debrief and saves insights to RESEARCH.md
 pub async fn research_and_enhance_debrief(
     debrief_path: &Path,
     topic_name: &str,
@@ -229,10 +229,18 @@ pub async fn research_and_enhance_debrief(
     // Read the current debrief
     let debrief_content = fs::read_to_string(debrief_path)?;
     
+    // Determine the research file path (same directory as debrief)
+    let research_path = debrief_path.parent()
+        .ok_or("Invalid debrief path")?
+        .join("RESEARCH.md");
+    
     // Check if research has already been performed (avoid duplicates)
-    if debrief_content.contains("## 🔍 Research Insights") {
-        println!("Research insights already present in debrief. Skipping...");
-        return Ok(());
+    if research_path.exists() {
+        let existing_research = fs::read_to_string(&research_path)?;
+        if existing_research.contains("## 🔍 Research Insights") {
+            println!("Research insights already present in RESEARCH.md. Skipping...");
+            return Ok(());
+        }
     }
     
     // Identify research tasks
@@ -277,13 +285,12 @@ pub async fn research_and_enhance_debrief(
         return Ok(());
     }
     
-    // Format and append research insights
+    // Format research insights
     let insights = format_research_insights(&results);
-    let enhanced_debrief = format!("{}{}", debrief_content, insights);
     
-    // Write back to file
-    fs::write(debrief_path, enhanced_debrief)?;
-    println!("✓ Added {} research insights to debrief", results.len());
+    // Write to RESEARCH.md file
+    fs::write(&research_path, insights)?;
+    println!("✓ Added {} research insights to RESEARCH.md", results.len());
     
     Ok(())
 }

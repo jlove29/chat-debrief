@@ -16,7 +16,7 @@ This will:
 1. ✅ Generate/update the debrief from conversation files
 2. 🔍 Identify research opportunities
 3. 🔬 Perform high-priority research
-4. 📝 Append insights to the debrief
+4. 📝 Save insights to RESEARCH.md
 
 ### Method 2: Standalone Research
 
@@ -42,14 +42,15 @@ Only **high-priority** (≥6/10) and **high-confidence** (≥6/10) research is i
 
 ## 📝 Example Output
 
-Research insights are appended to your debrief like this:
+Research insights are saved to `RESEARCH.md` in the topic directory:
 
 ```markdown
----
-
 ## 🔍 Research Insights
 
-*The following insights were automatically researched...*
+*The following insights were automatically researched based on your debrief.*
+*Generated: 2026-01-11*
+
+---
 
 ### 💡 How to fix Rust async runtime error?
 
@@ -58,6 +59,8 @@ Research insights are appended to your debrief like this:
 [Detailed findings here...]
 
 *Confidence: 9/10 | Priority: 8/10*
+
+---
 ```
 
 ## ✅ Tested Features
