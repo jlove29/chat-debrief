@@ -15,5 +15,9 @@ data/*
 # Logs
 *.log
 
+# Python
+__pycache__/
+*.pyc
+
 # Local config
 .gemini/
