@@ -8,71 +8,22 @@
 
 ## How It Works
 
-1. **Export** conversations from Gemini or AIM using Chrome DevTools snippets
+1. **Export** conversations from Gemini or AIM using browser bookmarklets
 2. **Process** exported transcripts to generate concise debriefs using AI
 3. **Reuse** debriefs to bootstrap context in new conversations
 
 ---
 
-# Chrome Snippets for Exporting Conversations
+# Exporting Conversations
 
-The `chrome_snippets/` directory contains JavaScript snippets that can be run in Chrome DevTools to automatically export conversation transcripts from Google AI chat interfaces.
+The `bookmarklets/` directory contains browser bookmarklets for exporting conversation transcripts from Google AI chat interfaces (Gemini and AIM).
 
-## Available Snippets
+**See [bookmarklets/README.md](bookmarklets/README.md) for complete documentation** on:
+- Creating and installing bookmarklets
+- Using the universal chat bookmarklet
+- Debugging tips
+- How the minification process works
 
-### `chat.js` - Universal Exporter
-Automatically detects which Google AI service you're using and runs the appropriate exporter:
-- Detects `gemini.google.com` → runs Gemini exporter
-- Detects `google.com/search` → runs AIM exporter
-- Shows error for unsupported sites
-
-### `gemini.js` - Gemini Chat Exporter
-Exports conversations from `gemini.google.com`:
-- Scrapes `.chat-history` elements
-- Extracts user queries and Gemini responses
-- Downloads as `transcript.txt` with formatted turns
-
-### `aim.js` - AIM Search Exporter
-Exports conversations from Google Search with AIM:
-- Scrapes `[data-scope-id="turn"]` elements
-- Extracts user queries and AIM responses
-- Handles lists, headings, and structured content
-- Downloads as `transcript.txt` with formatted turns
-
-## Installing Chrome Snippets
-
-1. **Open Chrome DevTools**
-   - Press `F12` or `Cmd+Option+I` (Mac) / `Ctrl+Shift+I` (Windows/Linux)
-   - Or right-click on the page and select "Inspect"
-
-2. **Navigate to Sources Panel**
-   - Click the "Sources" tab in DevTools
-   - Look for the "Snippets" tab in the left sidebar
-   - If you don't see it, click the `>>` button to find it
-
-3. **Create a New Snippet**
-   - Click "+ New snippet" at the bottom of the Snippets pane
-   - Give it a descriptive name (e.g., "Export Chat")
-
-4. **Copy Snippet Code**
-   - Open the desired snippet file from `chrome_snippets/`
-   - Copy the entire contents
-   - Paste into the snippet editor in DevTools
-
-5. **Save the Snippet**
-   - Press `Cmd+S` (Mac) / `Ctrl+S` (Windows/Linux)
-   - Or right-click the snippet name and select "Save"
-
-## Using the Snippets
-
-1. Navigate to a Google AI chat page (Gemini or AIM)
-2. Open DevTools (`F12`)
-3. Go to Sources → Snippets
-4. Right-click your snippet and select "Run" (or press `Cmd+Enter` / `Ctrl+Enter`)
-5. The conversation will be downloaded as `transcript.txt`
-6. Move the file to your data directory for processing
-
-**Tip:** For the universal exporter (`chat.js`), you only need one snippet that works on both platforms.
 
 # Running the pipeline
 

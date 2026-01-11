@@ -49,13 +49,13 @@ testdata/
 - Returns score (1-10), reasoning, and list of issues
 - Reusable module for quality assurance in other workflows
 
-## Chrome Snippets
+## Chrome Bookmarklets
 
 ### Overview
 
-The `chrome_snippets/` directory provides JavaScript snippets for Chrome DevTools that automate conversation export from Google AI chat interfaces. These snippets eliminate the need for manual copy-pasting of conversations.
+The `bookmarklets/` directory provides JavaScript bookmarklets that automate conversation export from Google AI chat interfaces. These bookmarklets eliminate the need for manual copy-pasting of conversations and can be run directly from your browser's url box.
 
-### Available Snippets
+### Available Bookmarklets
 
 #### `chat.js` - Universal Exporter
 A smart wrapper that detects the current site and delegates to the appropriate exporter:
@@ -85,19 +85,18 @@ Extracts conversations from Google Search with AIM:
 
 ### Installation
 
-1. Open Chrome DevTools (F12 or Cmd+Option+I)
-2. Navigate to Sources → Snippets
-3. Create new snippet ("+ New snippet")
-4. Copy code from desired snippet file
-5. Save (Cmd+S / Ctrl+S)
+1. Run the minify script: `python3 bookmarklets/minify.py chat` (or `gemini`/`aim` for specific extractors)
+2. Copy the generated `javascript:` URL
+3. Create a new bookmark in your browser
+4. Paste the code as the bookmark URL
+5. Give it a name (e.g., "Download Chat")
 
 ### Usage
 
-1. Navigate to Google AI chat page
-2. Open DevTools and go to Snippets
-3. Right-click snippet and select "Run" (or Cmd+Enter)
-4. `transcript.txt` downloads automatically
-5. Move file to appropriate data directory for processing
+1. Navigate to a Gemini or AIM conversation page
+2. Click the bookmarklet in your bookmarks bar
+3. `transcript.txt` downloads automatically
+4. Move file to appropriate data directory for processing
 
 ### Technical Details
 
@@ -106,12 +105,13 @@ Extracts conversations from Google Search with AIM:
 - **Console Feedback**: Logs extraction status with colored messages
 - **Blob API**: Creates downloadable text files client-side
 - **Content Cleaning**: Trims whitespace and filters irrelevant elements
+- **Minification**: Python script combines and minifies JavaScript into bookmarklet format
 
 ## Data Flow
 
 ### Input
 
-Conversation transcripts are exported using Chrome snippets (see Chrome Snippets section above).
+Conversation transcripts are exported using Chrome bookmarklets (see Chrome Bookmarklets section above).
 
 Directory structure:
 ```
@@ -189,7 +189,7 @@ Run with: `cargo test --test integration_test -- --ignored`
 ## Future Enhancements
 
 - Support running on all directories recursively
-- Chrome extension for automatic conversation export (snippets currently provide this functionality)
+- Chrome extension for automatic conversation export (bookmarklets currently provide this functionality)
 - Configurable models and prompts
 - Incremental processing (only new files)
 - Rate limiting and retry logic

@@ -1,4 +1,4 @@
-function scrape() {
+function scrapeAim() {
     const turns = document.querySelectorAll('[data-scope-id="turn"]');
     if (!turns || turns.length === 0) {
         throw new Error('No conversation turns found. Are you on the right page?');
@@ -49,7 +49,7 @@ function scrape() {
     return conversation;
 }
 
-function download(formattedText) {
+function downloadAimFile(formattedText) {
     const blob = new Blob([formattedText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -60,11 +60,11 @@ function download(formattedText) {
 }
 
 function downloadAim() {
-    const turns = scrape();
+    const turns = scrapeAim();
     const formattedText = turns.map(entry => {
         return `User: ${entry.user.trim()}\n\nAIM: ${entry.model.trim()}`;
     }).join('\n\n--------------------------------------------------\n\n');
-    download(formattedText);
+    downloadAimFile(formattedText);
 }
 
 downloadAim();
