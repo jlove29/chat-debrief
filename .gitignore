@@ -1,0 +1,19 @@
+/target
+.env
+data/*
+
+# macOS
+.DS_Store
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Local config
+.gemini/
