@@ -1,4 +1,4 @@
-function scrape() {
+function scrapeGemini() {
     const chatHistory = document.querySelectorAll('.chat-history');
     if (!chatHistory || chatHistory.length === 0) {
         throw new Error('No element with class .chat-history found. Are you on the right page?');
@@ -22,7 +22,7 @@ function scrape() {
     return turns;
 }
 
-function download(formattedText) {
+function downloadGeminiFile(formattedText) {
     const blob = new Blob([formattedText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -33,11 +33,11 @@ function download(formattedText) {
 }
 
 function downloadGemini() {
-    const turns = scrape();
+    const turns = scrapeGemini();
     const formattedText = turns.map(entry => {
         return `User: ${entry.user.trim()}\n\nGemini: ${entry.gemini.trim()}`;
     }).join('\n\n--------------------------------------------------\n\n');
-    download(formattedText);
+    downloadGeminiFile(formattedText);
 }
 
 downloadGemini();
