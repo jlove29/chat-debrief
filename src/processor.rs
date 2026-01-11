@@ -113,7 +113,7 @@ pub async fn process_files(debrief_contents: String, other_contents: Vec<String>
     eprintln!("Number of other files: {}", other_contents.len());
 
     // Call the Gemini API
-    let response = crate::gemini::analyze_files(debrief_contents, other_contents).await?;
+    let response = crate::debrief::analyze_files(debrief_contents, other_contents).await?;
     
     // Print the response
     println!("\n=== Gemini Response ===");
