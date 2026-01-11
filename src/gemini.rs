@@ -1,9 +1,6 @@
-use genai_rs::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-
-const MODEL_NAME: &str = "gemini-3-flash-preview";
-const API_KEY_ENV_VAR: &str = "GEMINI_API_KEY";
+use crate::gemini_utils::{self, MODEL_NAME};
 
 const DISCLAIMER: &str = "IMPORTANT:
 - Your goal is to summarize the user's needs, current progress or state, and anything they might have done or tried in the course of the conversation.
@@ -25,13 +22,6 @@ pub struct Debrief {
 
 /// Calls the Gemini API with the provided file contents
 pub async fn analyze_files(debrief_contents: String, other_contents: Vec<String>) -> Result<String, genai_rs::GenaiError> {
-    // Get API key from environment
-    let api_key = std::env::var(API_KEY_ENV_VAR)
-        .expect("GEMINI_API_KEY environment variable must be set");
-
-    // Initialize the Gemini client
-    let client = Client::new(api_key);
-
     // Construct the prompt based on whether debrief exists
     let has_existing_debrief = !debrief_contents.trim().is_empty();
     let prompt = build_prompt(debrief_contents, other_contents, has_existing_debrief);
@@ -57,17 +47,10 @@ pub async fn analyze_files(debrief_contents: String, other_contents: Vec<String>
 
     // Call the Gemini API with structured output
     println!("Calling Gemini API...");
-    let response = client
-        .interaction()
-        .with_model(MODEL_NAME)
-        .with_text(&prompt)
-        .with_response_format(schema)
-        .create()
-        .await?;
+    let json_text = gemini_utils::call_gemini_with_schema(MODEL_NAME, &prompt, schema).await?;
     
     // Parse the JSON response into our Debrief struct
-    let json_text = response.text().unwrap_or_default();
-    let debrief: Debrief = serde_json::from_str(json_text)
+    let debrief: Debrief = serde_json::from_str(&json_text)
         .expect("Failed to parse debrief JSON from Gemini response");
     
     // Convert the structured debrief to markdown
@@ -85,7 +68,7 @@ fn build_prompt(debrief_contents: String, other_contents: Vec<String>, has_exist
         prompt.push_str("\n\n");
         
         prompt.push_str("Here are the updates to the user's conversations since this debrief was generated. Note that some of them might contain full conversations, where previous steps in the conversation have already been incorporated into the debrief.\n\n");
-        prompt.push_str(&format_files(other_contents));
+        prompt.push_str(&gemini_utils::format_files(&other_contents));
         prompt.push_str("\n\n");
         
         prompt.push_str("Please rewrite sections of the debrief if there is new information which clarifies, contradicts, or contains important additional details. If you have new information that doesn't fit into the existing debrief, you can add a new section.\n\n");
@@ -93,7 +76,7 @@ fn build_prompt(debrief_contents: String, other_contents: Vec<String>, has_exist
     } else {
         // Prompt for creating new debrief
         prompt.push_str("Here are the user's conversations with Gemini about this topic.\n\n");
-        prompt.push_str(&format_files(other_contents));
+        prompt.push_str(&gemini_utils::format_files(&other_contents));
         prompt.push_str("\n\n");
         
         prompt.push_str("Your job is to provide a debrief on the user's conversations with Gemini on this topic.\n\n");
@@ -102,15 +85,6 @@ fn build_prompt(debrief_contents: String, other_contents: Vec<String>, has_exist
     prompt.push_str(DISCLAIMER);
     
     prompt
-}
-
-/// Formats the file contents for inclusion in the prompt
-fn format_files(files: Vec<String>) -> String {
-    files.iter()
-        .enumerate()
-        .map(|(i, content)| format!("File {}:\n{}\n", i + 1, content))
-        .collect::<Vec<_>>()
-        .join("\n")
 }
 
 /// Converts a structured Debrief into markdown format
@@ -124,32 +98,6 @@ fn format_debrief_as_markdown(debrief: &Debrief) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_format_files_empty() {
-        let files = vec![];
-        let result = format_files(files);
-        assert_eq!(result, "");
-    }
-
-    #[test]
-    fn test_format_files_single() {
-        let files = vec!["Content of first file".to_string()];
-        let result = format_files(files);
-        assert_eq!(result, "File 1:\nContent of first file\n");
-    }
-
-    #[test]
-    fn test_format_files_multiple() {
-        let files = vec![
-            "First file content".to_string(),
-            "Second file content".to_string(),
-            "Third file content".to_string(),
-        ];
-        let result = format_files(files);
-        let expected = "File 1:\nFirst file content\n\nFile 2:\nSecond file content\n\nFile 3:\nThird file content\n";
-        assert_eq!(result, expected);
-    }
 
     #[test]
     fn test_format_debrief_as_markdown_empty() {
