@@ -11,6 +11,10 @@ path = "src/lib.rs"
 name = "read_files"
 path = "src/main.rs"
 
+[[bin]]
+name = "async_researcher"
+path = "src/async_researcher.rs"
+
 [dependencies]
 genai-rs = "0.5.0"
 tokio = { version = "1", features = ["full"] }

@@ -34,7 +34,7 @@ fn copy_testdata_file(testdata_dir: &str, filename: &str, target_dir: &Path) {
 /// Helper to run the binary on a directory
 fn run_pipeline(dir: &Path) -> bool {
     let output = Command::new("cargo")
-        .args(&["run", "--", dir.to_str().unwrap()])
+        .args(&["run", "--bin", "read_files", "--", dir.to_str().unwrap()])
         .output()
         .expect("Failed to execute command");
     
