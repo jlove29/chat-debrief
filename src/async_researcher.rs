@@ -1,6 +1,6 @@
 use std::env;
 use std::path::Path;
-use read_files::researcher;
+use read_files::{researcher, processor, debrief};
 
 /// Async researcher binary - runs background research on debriefs
 /// 
@@ -43,9 +43,41 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         let debrief_path = topic_path.join("DEBRIEF.md");
         
+        // If DEBRIEF.md doesn't exist, generate it first
         if !debrief_path.exists() {
-            eprintln!("Error: DEBRIEF.md not found in topic '{}'", topic_name);
-            std::process::exit(1);
+            println!("📝 DEBRIEF.md not found. Generating debrief first...");
+            
+            // Read all conversation files from the topic directory
+            let (existing_debrief, other_contents, _unread_paths) = match processor::read_directory_files(&topic_path) {
+                Ok(result) => result,
+                Err(e) => {
+                    eprintln!("Error reading files from '{}': {}", topic_name, e);
+                    std::process::exit(1);
+                }
+            };
+            
+            if other_contents.is_empty() {
+                eprintln!("Error: No conversation files found in topic '{}'", topic_name);
+                eprintln!("Please add conversation transcripts (e.g., 1.txt, 2.txt) to the directory.");
+                std::process::exit(1);
+            }
+            
+            // Generate the debrief
+            match debrief::analyze_files(existing_debrief, other_contents).await {
+                Ok(new_debrief) => {
+                    // Write the debrief
+                    if let Err(e) = processor::write_debrief(&topic_path, &new_debrief) {
+                        eprintln!("Error writing debrief: {}", e);
+                        std::process::exit(1);
+                    }
+                    println!("✅ Debrief generated successfully");
+                    println!();
+                }
+                Err(e) => {
+                    eprintln!("Error generating debrief: {}", e);
+                    std::process::exit(1);
+                }
+            }
         }
         
         println!("🔍 Starting async research for topic: {}", topic_name);
