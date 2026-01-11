@@ -12,7 +12,8 @@ This application processes conversation transcripts and generates structured DEB
 src/
 ├── lib.rs          # Library entry point, exports public modules
 ├── main.rs         # Binary entry point, CLI interface
-├── gemini.rs       # Gemini API interaction and prompt building
+├── debrief.rs      # Debrief generation and prompt building
+├── gemini_utils.rs # Shared Gemini API utilities
 ├── processor.rs    # File system operations (read/write/mark)
 └── autorater.rs    # AI-powered debrief quality evaluation
 
@@ -35,14 +36,19 @@ testdata/
 - `read_directory_files()`: Reads and categorizes files in a directory
 - `write_debrief()`: Writes DEBRIEF.md content
 - `mark_files_as_read()`: Renames processed files with `_read` suffix
-- `process_files()`: Orchestrates calls to Gemini API
+- `process_files()`: Orchestrates debrief generation
 
-#### `gemini.rs`
-- `analyze_files()`: Main API call to Gemini for debrief generation
+#### `debrief.rs`
+- `analyze_files()`: Generates or updates debrief from conversation files
 - `build_prompt()`: Constructs prompts for new or updated debriefs
-- `format_files()`: Formats file contents for inclusion in prompts
 - `format_debrief_as_markdown()`: Converts structured debrief to markdown
 - Defines `Debrief` and `DebriefItem` structs for structured output
+
+#### `gemini_utils.rs`
+- `format_files()`: Formats file contents for inclusion in prompts
+- `create_client()`: Creates Gemini API client from environment
+- `call_gemini_with_schema()`: Unified function for structured API calls
+- Shared utilities used by both `debrief.rs` and `autorater.rs`
 
 #### `autorater.rs`
 - `evaluate_debrief()`: Uses Gemini to evaluate debrief quality
@@ -134,7 +140,7 @@ data/
    - Separate unread files from `_read` files
    - Read existing `DEBRIEF.md` if present
 
-2. **Analysis Phase** (`gemini::analyze_files`)
+2. **Analysis Phase** (`debrief::analyze_files`)
    - Build prompt with file contents and existing debrief
    - Call Gemini API with structured output schema
    - Parse JSON response into `Debrief` struct
@@ -161,7 +167,8 @@ Processed files are marked with `_read` suffix to track what's been analyzed.
 ### Unit Tests
 
 Each module includes `#[cfg(test)]` sections testing:
-- **gemini.rs**: Prompt building, formatting, serialization
+- **debrief.rs**: Prompt building, debrief formatting, serialization
+- **gemini_utils.rs**: Shared API utilities, file formatting
 - **processor.rs**: File operations, workflow integration
 - **autorater.rs**: Prompt construction, response parsing
 

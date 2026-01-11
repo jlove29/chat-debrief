@@ -54,7 +54,8 @@ cargo test --lib
 ```
 
 This tests:
-- `gemini.rs`: Prompt building, file formatting, and serialization
+- `debrief.rs`: Prompt building, debrief formatting, and serialization
+- `gemini_utils.rs`: Shared API utilities and file formatting
 - `processor.rs`: File reading, debrief writing, and file marking
 - `autorater.rs`: Prompt building and response serialization
 

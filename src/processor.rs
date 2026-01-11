@@ -106,17 +106,17 @@ pub fn mark_files_as_read(file_paths: Vec<std::path::PathBuf>) -> io::Result<()>
     Ok(())
 }
 
-// Process the file contents by calling the Gemini API
-// Returns the Gemini response to be written to DEBRIEF.md
+// Process the file contents to generate or update the debrief
+// Returns the debrief content to be written to DEBRIEF.md
 pub async fn process_files(debrief_contents: String, other_contents: Vec<String>) -> Result<String, genai_rs::GenaiError> {
     eprintln!("Debrief contents length: {} chars", debrief_contents.len());
     eprintln!("Number of other files: {}", other_contents.len());
 
-    // Call the Gemini API
-    let response = crate::gemini::analyze_files(debrief_contents, other_contents).await?;
+    // Generate or update the debrief
+    let response = crate::debrief::analyze_files(debrief_contents, other_contents).await?;
     
     // Print the response
-    println!("\n=== Gemini Response ===");
+    println!("\n=== Generated Debrief ===");
     println!("{}", response);
     println!("======================\n");
 
