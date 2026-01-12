@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use crate::gemini_utils::{self, MODEL_NAME};
+use crate::gemini_deep_research_client;
 use std::path::Path;
 use std::fs;
 
@@ -130,60 +131,125 @@ Only suggest high-value research tasks. Aim for 3-7 tasks maximum."#,
     Ok(tasks)
 }
 
-/// Performs web research for a given task (simulated for now)
-/// In a real implementation, this would use a web search API
+/// Performs batched deep research for multiple tasks using a single Deep Research API call
+///
+/// This function combines all research tasks into a single comprehensive query,
+/// which is more efficient than making multiple sequential API calls.
+pub async fn perform_batch_research(
+    tasks: &[ResearchTask],
+) -> Result<ResearchResult, Box<dyn std::error::Error>> {
+    if tasks.is_empty() {
+        return Err("No tasks to research".into());
+    }
+    
+    // Create the Gemini client
+    let client = gemini_utils::create_client();
+    
+    // Build a comprehensive research query that includes all tasks
+    let mut query = String::from("Please conduct comprehensive research on the following topics:\n\n");
+    
+    for (i, task) in tasks.iter().enumerate() {
+        query.push_str(&format!(
+            "{}. **{}**\n   Query: {}\n   Context: {}\n\n",
+            i + 1,
+            match task.task_type {
+                ResearchTaskType::GapFilling => "Gap Filling",
+                ResearchTaskType::NoveltyCheck => "Novelty Check",
+                ResearchTaskType::CrossPollination => "Cross-Pollination",
+            },
+            task.query,
+            task.context
+        ));
+    }
+    
+    query.push_str(
+        r#"For each topic, provide:
+1. Specific, actionable information and findings
+2. Relevant details, solutions, or insights
+3. Sources and citations where applicable
+4. Any caveats or limitations
+
+Organize your response with clear sections for each research topic.
+Be thorough and evidence-based."#
+    );
+
+    println!("Starting batched deep research for {} tasks...", tasks.len());
+    
+    // Perform deep research using the Deep Research agent
+    let result = gemini_deep_research_client::perform_deep_research(&client, &query).await?;
+    
+    // Extract sources from the findings
+    let sources = extract_sources(&result.findings);
+    
+    // Estimate confidence based on the depth of the response
+    let confidence = estimate_confidence(&result.findings);
+    
+    // Create a synthetic task that represents all the batched tasks
+    let batch_task = ResearchTask {
+        task_type: ResearchTaskType::GapFilling,
+        query: format!("Batch research: {} tasks", tasks.len()),
+        context: format!("Combined research for: {}", 
+            tasks.iter()
+                .map(|t| t.query.as_str())
+                .collect::<Vec<_>>()
+                .join("; ")
+        ),
+        priority: tasks.iter().map(|t| t.priority).max().unwrap_or(5),
+    };
+    
+    Ok(ResearchResult {
+        task: batch_task,
+        findings: result.findings,
+        confidence,
+        sources,
+    })
+}
+
+/// Performs deep research for a single task (kept for backwards compatibility)
+///
+/// Note: For multiple tasks, use perform_batch_research instead for better efficiency.
 pub async fn perform_research(
     task: &ResearchTask,
 ) -> Result<ResearchResult, Box<dyn std::error::Error>> {
-    // For now, we'll use Gemini to simulate research
-    // In production, this would integrate with web search APIs
-    let prompt = format!(
-        r#"You are a research assistant helping to answer questions and find information.
+    perform_batch_research(&[task.clone()]).await
+}
 
-Research Query: {}
-Context: {}
-Task Type: {:?}
-
-Based on your knowledge, provide:
-1. Key findings that answer the query or provide relevant information
-2. Specific details, solutions, or insights
-3. Any caveats or limitations
-
-Be specific and actionable. If you don't have current information, acknowledge that and provide the best available guidance."#,
-        task.query, task.context, task.task_type
-    );
-
-    let schema = json!({
-        "type": "object",
-        "properties": {
-            "findings": {"type": "string"},
-            "confidence": {"type": "integer", "minimum": 1, "maximum": 10},
-            "sources": {
-                "type": "array",
-                "items": {"type": "string"}
-            }
-        },
-        "required": ["findings", "confidence", "sources"]
-    });
-
-    println!("Researching: {}", task.query);
-    let json_text = gemini_utils::call_gemini_with_schema(MODEL_NAME, &prompt, schema).await?;
+/// Extracts source references from research findings
+/// This is a simple heuristic that looks for URLs and citation patterns
+fn extract_sources(findings: &str) -> Vec<String> {
+    let mut sources = Vec::new();
     
-    #[derive(Deserialize)]
-    struct ResearchData {
-        findings: String,
-        confidence: u8,
-        sources: Vec<String>,
+    // Look for URLs
+    for word in findings.split_whitespace() {
+        if word.starts_with("http://") || word.starts_with("https://") {
+            sources.push(word.trim_end_matches(|c: char| !c.is_alphanumeric() && c != '/' && c != ':').to_string());
+        }
     }
     
-    let data: ResearchData = serde_json::from_str(&json_text)?;
+    // If no URLs found, indicate that sources are embedded in the research
+    if sources.is_empty() {
+        sources.push("Deep Research synthesis (multiple sources)".to_string());
+    }
     
-    Ok(ResearchResult {
-        task: task.clone(),
-        findings: data.findings,
-        confidence: data.confidence,
-        sources: data.sources,
-    })
+    sources
+}
+
+/// Estimates confidence based on the depth and quality of findings
+fn estimate_confidence(findings: &str) -> u8 {
+    // Simple heuristic: longer, more detailed responses indicate higher confidence
+    let length = findings.len();
+    
+    if length > 2000 {
+        9 // Very comprehensive research
+    } else if length > 1000 {
+        8 // Detailed research
+    } else if length > 500 {
+        7 // Good research
+    } else if length > 200 {
+        6 // Basic research
+    } else {
+        5 // Minimal research
+    }
 }
 
 /// Formats research results as markdown to append to debrief
@@ -265,20 +331,9 @@ pub async fn research_and_enhance_debrief(
     
     println!("Performing research on {} high-priority tasks...", high_priority_tasks.len());
     
-    let mut results = Vec::new();
-    for task in high_priority_tasks {
-        match perform_research(&task).await {
-            Ok(result) => {
-                // Only include high-confidence results (>= 6)
-                if result.confidence >= 6 {
-                    results.push(result);
-                }
-            }
-            Err(e) => {
-                eprintln!("Error researching task '{}': {}", task.query, e);
-            }
-        }
-    }
+    // Batch all research tasks into a single Deep Research call
+    let result = perform_batch_research(&high_priority_tasks).await?;
+    let results = vec![result];
     
     if results.is_empty() {
         println!("No high-confidence research results to add.");

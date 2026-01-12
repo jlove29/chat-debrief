@@ -24,10 +24,10 @@ Run research on an existing debrief:
 
 ```bash
 # Research a specific topic
-cargo run --bin async_researcher data your_topic
+cargo run --bin run_research data your_topic
 
 # Cross-topic analysis (requires 2+ topics with debriefs)
-cargo run --bin async_researcher data
+cargo run --bin run_research data
 ```
 
 ## What Gets Researched?
@@ -96,7 +96,7 @@ Research insights are saved to `RESEARCH.md` in the topic directory:
 
 ## Configuration
 
-Adjust thresholds in `src/researcher.rs`:
+Adjust thresholds in `src/research_orchestrator.rs`:
 
 ```rust
 // Minimum priority for research (line ~261)

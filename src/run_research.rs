@@ -1,11 +1,11 @@
 use std::env;
 use std::path::Path;
-use read_files::{researcher, processor, debrief};
+use read_files::{research_orchestrator, processor, debrief};
 
-/// Async researcher binary - runs background research on debriefs
+/// Research runner binary - runs background research on debriefs
 /// 
 /// Usage:
-///   cargo run --bin async_researcher <data_directory> [topic_name]
+///   cargo run --bin run_research <data_directory> [topic_name]
 ///   
 /// If topic_name is provided, researches that specific topic.
 /// If omitted, performs cross-pollination analysis across all topics.
@@ -83,7 +83,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("Starting async research for topic: {}", topic_name);
         println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         
-        match researcher::research_and_enhance_debrief(&debrief_path, topic_name).await {
+        match research_orchestrator::research_and_enhance_debrief(&debrief_path, topic_name).await {
             Ok(_) => {
                 println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
                 println!("Research complete!");
@@ -98,7 +98,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("Analyzing cross-topic connections...");
         println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         
-        match researcher::analyze_cross_topic_connections(data_dir).await {
+        match research_orchestrator::analyze_cross_topic_connections(data_dir).await {
             Ok(tasks) => {
                 if tasks.is_empty() {
                     println!("No cross-pollination opportunities found.");
@@ -119,7 +119,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         println!("\nResearching {} high-priority connections...\n", high_priority.len());
                         
                         for task in high_priority {
-                            match researcher::perform_research(&task).await {
+                            match research_orchestrator::perform_research(&task).await {
                                 Ok(result) => {
                                     println!("✓ {}", task.query);
                                     println!("  Confidence: {}/10", result.confidence);

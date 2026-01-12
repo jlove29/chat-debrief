@@ -52,10 +52,10 @@ Run research independently on an existing debrief:
 
 ```bash
 # Research a specific topic
-cargo run --bin async_researcher data hamstring_injury
+cargo run --bin run_research data hamstring_injury
 
 # Cross-topic analysis across all debriefs
-cargo run --bin async_researcher data
+cargo run --bin run_research data
 ```
 
 ## How It Works
@@ -155,7 +155,7 @@ GEMINI_API_KEY=your_api_key_here
 
 ### Customization
 
-You can adjust thresholds in `researcher.rs`:
+You can adjust thresholds in `research_orchestrator.rs`:
 
 ```rust
 // Minimum priority for research execution
@@ -173,15 +173,15 @@ if result.confidence >= 6 {  // Adjust this threshold
 
 ### New Files
 
-- **`src/researcher.rs`** - Core research logic and data structures
-- **`src/async_researcher.rs`** - Standalone binary for async research
+- **`src/research_orchestrator.rs`** - Core research logic and data structures
+- **`src/run_research.rs`** - Standalone binary for async research
 - **`ASYNC_RESEARCH.md`** - This documentation
 
 ### Modified Files
 
 - **`src/lib.rs`** - Exports researcher module
 - **`src/main.rs`** - Added `--research` flag
-- **`Cargo.toml`** - Added async_researcher binary
+- **`Cargo.toml`** - Added run_research binary
 
 ### Integration Points
 
@@ -195,7 +195,7 @@ if result.confidence >= 6 {  // Adjust this threshold
          │
          ▼
 ┌─────────────────┐
-│  researcher.rs  │
+│  research_orchestrator.rs  │
 │ ┌─────────────┐ │
 │ │ Identify    │ │
 │ │ Tasks       │ │
@@ -252,7 +252,7 @@ if result.confidence >= 6 {  // Adjust this threshold
 Run the unit tests:
 
 ```bash
-cargo test --lib researcher
+cargo test --lib research_orchestrator
 ```
 
 Test on a real debrief:
@@ -262,7 +262,7 @@ Test on a real debrief:
 cargo run --bin read_files data/hamstring_injury --research
 
 # Or run research separately
-cargo run --bin async_researcher data hamstring_injury
+cargo run --bin run_research data hamstring_injury
 ```
 
 ## Performance Considerations

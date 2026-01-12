@@ -12,8 +12,8 @@ name = "read_files"
 path = "src/main.rs"
 
 [[bin]]
-name = "async_researcher"
-path = "src/async_researcher.rs"
+name = "run_research"
+path = "src/run_research.rs"
 
 [dependencies]
 genai-rs = "0.5.0"
