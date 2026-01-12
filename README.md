@@ -24,7 +24,7 @@
 
 ```bash
 # Generate a debrief from conversation files
-cargo run -- data/my_topic
+cargo run --bin read_files -- data/my_topic
 
 # Generate debrief + run research
 cargo run --bin read_files -- data/my_topic --research

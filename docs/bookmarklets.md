@@ -78,5 +78,5 @@ If you encounter issues, see the [engineering documentation](eng/bookmarklets.md
 After exporting conversations:
 
 1. Copy the downloaded transcript files to a topic directory in the location where you run the pipeline (e.g., `data/my_topic/`)
-2. Run the debrief generator: `cargo run -- data/my_topic`
+2. Run the debrief generator: `cargo run --bin read_files -- data/my_topic`
 3. Optionally run research: `cargo run --bin read_files -- data/my_topic --research`
