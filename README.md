@@ -59,11 +59,3 @@ cargo run --bin read_files -- data/my_topic --research
 ├── docs/             # User-facing documentation
 └── docs/eng/         # Engineering documentation
 ```
-
-## Contributing
-
-See [docs/eng/design.md](docs/eng/design.md) for architecture details and [docs/eng/testing.md](docs/eng/testing.md) for testing guidelines.
-
-## License
-
-MIT

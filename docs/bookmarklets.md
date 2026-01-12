@@ -15,18 +15,24 @@ python3 minify.py chat
 
 This will output a `javascript:` URL that you can save as a bookmark.
 
-### 2. Install the Bookmarklet
+### 2. Set Up as Search Engine Shortcut
+
+The fastest way to use the bookmarklet is via Chrome's search engine settings:
 
 1. Copy the entire output (starting with `javascript:`)
-2. Create a new bookmark in your browser
-3. Paste the copied code as the bookmark URL
-4. Give it a name (e.g., "Download Chat")
+2. Go to `chrome://settings/searchEngines` → **Site search** → **Add**
+3. Fill in the fields:
+   - **Name**: Download Chat
+   - **Shortcut**: `chat` (or any short keyword you prefer)
+   - **URL**: Paste the `javascript:` code here
+4. Click **Add**
 
 ### 3. Use the Bookmarklet
 
 1. Navigate to a Gemini or AIM conversation page
-2. Click the bookmarklet in your bookmarks bar
-3. The conversation will be downloaded as `transcript.txt`
+2. Press `Cmd + L` (or `Ctrl + L` on Windows/Linux) to focus the address bar
+3. Type your shortcut keyword (e.g., `chat`) and press Enter
+4. The conversation will be downloaded as `transcript.txt`
 
 ## Available Bookmarklets
 
@@ -65,24 +71,12 @@ Gemini/AIM: [next model response]
 
 ## Troubleshooting
 
-### Bookmarklet doesn't work
-
-1. Make sure you're on a Gemini or AIM conversation page
-2. Try refreshing the page and clicking the bookmarklet again
-3. Check that you copied the entire `javascript:` URL when creating the bookmark
-
-### Nothing downloads
-
-1. Check your browser's download settings
-2. Make sure pop-ups aren't blocked for the site
-3. Try opening the browser console (F12) to see if there are any errors
-
-For more detailed debugging information, see [docs/eng/bookmarklets.md](eng/bookmarklets.md).
+If you encounter issues, see the [engineering documentation](eng/bookmarklets.md) for detailed debugging information.
 
 ## Next Steps
 
 After exporting conversations:
 
-1. Save the transcript files to a topic directory (e.g., `data/my_topic/`)
+1. Copy the downloaded transcript files to a topic directory in the location where you run the pipeline (e.g., `data/my_topic/`)
 2. Run the debrief generator: `cargo run -- data/my_topic`
 3. Optionally run research: `cargo run --bin read_files -- data/my_topic --research`
