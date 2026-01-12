@@ -94,7 +94,7 @@ These tests verify:
 These tests verify:
 - DEBRIEF.md is created
 - RESEARCH.md is created with `--research` flag
-- RESEARCH.md contains expected header "🔍 Research Insights"
+- RESEARCH.md contains expected header "Research Insights"
 - RESEARCH.md has substantial content (>200 bytes)
 - DEBRIEF.md does NOT contain research insights (separation verified)
 

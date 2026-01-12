@@ -204,7 +204,7 @@ async fn test_research_for_directory(testdata_dir: &str) {
     
     let research_content = read_research(&test_dir).expect("RESEARCH.md should exist");
     assert!(!research_content.is_empty(), "RESEARCH.md is empty for {}", testdata_dir);
-    assert!(research_content.contains("## 🔍 Research Insights"), 
+    assert!(research_content.contains("## Research Insights"), 
             "RESEARCH.md missing expected header for {}", testdata_dir);
     assert!(research_content.len() > 200, 
             "RESEARCH.md content seems too short for {}", testdata_dir);
@@ -213,7 +213,7 @@ async fn test_research_for_directory(testdata_dir: &str) {
     println!("First 500 chars: {}\n", &research_content[..research_content.len().min(500)]);
     
     // Step 5: Verify DEBRIEF.md does NOT contain research insights
-    assert!(!debrief_content.contains("## 🔍 Research Insights"),
+    assert!(!debrief_content.contains("## Research Insights"),
             "DEBRIEF.md should not contain research insights for {}", testdata_dir);
     
     // Step 6: Cleanup

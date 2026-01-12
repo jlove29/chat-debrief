@@ -1,6 +1,6 @@
 # Quick Start: Async Research
 
-## 🚀 Getting Started
+## Getting Started
 
 The async research feature is now fully integrated into chat-debrief! Here's how to use it:
 
@@ -13,10 +13,10 @@ cargo run --bin read_files data/your_topic --research
 ```
 
 This will:
-1. ✅ Generate/update the debrief from conversation files
-2. 🔍 Identify research opportunities
-3. 🔬 Perform high-priority research
-4. 📝 Save insights to RESEARCH.md
+1. Generate/update the debrief from conversation files
+2. Identify research opportunities
+3. Perform high-priority research
+4. Save insights to RESEARCH.md
 
 ### Method 2: Standalone Research
 
@@ -30,29 +30,29 @@ cargo run --bin async_researcher data your_topic
 cargo run --bin async_researcher data
 ```
 
-## 📊 What Gets Researched?
+## What Gets Researched?
 
 The system automatically identifies:
 
-- **💡 Gap Filling**: Open questions, errors, stuck points
-- **🆕 Novelty Checks**: Updates to libraries, frameworks, papers
-- **🔗 Cross-Pollination**: Connections between different topics
+- **Gap Filling**: Open questions, errors, stuck points
+- **Novelty Checks**: Updates to libraries, frameworks, papers
+- **Cross-Pollination**: Connections between different topics
 
 Only **high-priority** (≥6/10) and **high-confidence** (≥6/10) research is included.
 
-## 📝 Example Output
+## Example Output
 
 Research insights are saved to `RESEARCH.md` in the topic directory:
 
 ```markdown
-## 🔍 Research Insights
+## Research Insights
 
 *The following insights were automatically researched based on your debrief.*
 *Generated: 2026-01-11*
 
 ---
 
-### 💡 How to fix Rust async runtime error?
+### **Gap Filling** How to fix Rust async runtime error?
 
 **Context:** User encountered runtime error when spawning tasks
 
@@ -63,15 +63,15 @@ Research insights are saved to `RESEARCH.md` in the topic directory:
 ---
 ```
 
-## ✅ Tested Features
+## Tested Features
 
-- ✅ Integrated research with `--research` flag
-- ✅ Standalone topic research
-- ✅ Cross-topic analysis (needs 2+ debriefs)
-- ✅ All unit tests passing
-- ✅ Real-world testing on hamstring_injury and hard_drive topics
+- Integrated research with `--research` flag
+- Standalone topic research
+- Cross-topic analysis (needs 2+ debriefs)
+- All unit tests passing
+- Real-world testing on hamstring_injury and hard_drive topics
 
-## 🎯 Real Test Results
+## Real Test Results
 
 **Test 1: hamstring_injury topic**
 - Identified: 6 research tasks
@@ -94,7 +94,7 @@ Research insights are saved to `RESEARCH.md` in the topic directory:
   - WSL2 HFS+ support
   - macOS mount error 22 troubleshooting
 
-## 🔧 Configuration
+## Configuration
 
 Adjust thresholds in `src/researcher.rs`:
 

@@ -192,14 +192,14 @@ pub fn format_research_insights(results: &[ResearchResult]) -> String {
         return String::new();
     }
     
-    let mut output = String::from("\n\n---\n\n## 🔍 Research Insights\n\n");
+    let mut output = String::from("\n\n---\n\n## Research Insights\n\n");
     output.push_str("*The following insights were automatically researched based on open questions and topics in your conversations.*\n\n");
     
     for result in results {
         let task_emoji = match result.task.task_type {
-            ResearchTaskType::GapFilling => "💡",
-            ResearchTaskType::NoveltyCheck => "🆕",
-            ResearchTaskType::CrossPollination => "🔗",
+            ResearchTaskType::GapFilling => "**Gap Filling**",
+            ResearchTaskType::NoveltyCheck => "**Novelty Check**",
+            ResearchTaskType::CrossPollination => "**Cross-Pollination**",
         };
         
         output.push_str(&format!("### {} {}\n\n", task_emoji, result.task.query));
@@ -237,7 +237,7 @@ pub async fn research_and_enhance_debrief(
     // Check if research has already been performed (avoid duplicates)
     if research_path.exists() {
         let existing_research = fs::read_to_string(&research_path)?;
-        if existing_research.contains("## 🔍 Research Insights") {
+        if existing_research.contains("## Research Insights") {
             println!("Research insights already present in RESEARCH.md. Skipping...");
             return Ok(());
         }
@@ -418,7 +418,7 @@ mod tests {
         };
         
         let output = format_research_insights(&[result]);
-        assert!(output.contains("## 🔍 Research Insights"));
+        assert!(output.contains("## Research Insights"));
         assert!(output.contains("How to fix error X?"));
         assert!(output.contains("Solution: Do Y and Z"));
         assert!(output.contains("Documentation"));

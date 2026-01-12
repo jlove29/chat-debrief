@@ -6,7 +6,7 @@ The async research feature transforms `chat-debrief` from a reactive summarizati
 
 ## Features
 
-### 1. 💡 Proactive Gap Filling
+### 1. Proactive Gap Filling
 Detects open questions and unresolved issues in your debriefs and automatically researches solutions.
 
 **Example:**
@@ -14,7 +14,7 @@ Detects open questions and unresolved issues in your debriefs and automatically 
 - System researches: "How to fix error X in Y configuration"
 - Appends solution to debrief before your next session
 
-### 2. 🆕 Novelty/Update Checks
+### 2. Novelty/Update Checks
 Monitors long-running topics for new developments, breaking changes, or updates.
 
 **Example:**
@@ -22,7 +22,7 @@ Monitors long-running topics for new developments, breaking changes, or updates.
 - System checks: "Latest updates and breaking changes for Rust library X"
 - Alerts you to version 2.0 release with migration guide
 
-### 3. 🔗 Cross-Pollination
+### 3. Cross-Pollination
 Analyzes debriefs across different topics to find valuable connections.
 
 **Example:**
@@ -110,12 +110,12 @@ pub struct ResearchResult {
 The research insights are formatted and saved to a separate `RESEARCH.md` file in your topic directory:
 
 ```markdown
-## 🔍 Research Insights
+## Research Insights
 
 *The following insights were automatically researched based on your debrief.*
 *Generated: 2026-01-11*
 
-### 💡 How to fix Rust async runtime error with tokio?
+### **Gap Filling** How to fix Rust async runtime error with tokio?
 
 **Context:** User encountered runtime error when spawning async tasks
 
@@ -130,7 +130,7 @@ async functions that are already running in a tokio context.
 
 *Confidence: 9/10 | Priority: 8/10*
 
-### 🔗 Rust vector database clients with async support
+### **Cross-Pollination** Rust vector database clients with async support
 
 **Context:** Cross-topic connection between vector databases and Rust async patterns
 

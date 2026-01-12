@@ -8,11 +8,11 @@
 
 ## Features
 
-- 📝 **Automated Debrief Generation** - AI-powered summaries of conversation history
-- 🔍 **Async Research** - Automatic research on open questions and topics from debriefs
-- 📊 **Cross-Topic Analysis** - Find connections between different conversation topics
-- 🔖 **Browser Bookmarklets** - Easy export from Gemini and AIM chat interfaces
-- ✅ **Quality Evaluation** - Built-in autorater for debrief quality assessment
+- **Automated Debrief Generation** - AI-powered summaries of conversation history
+- **Async Research** - Automatic research on open questions and topics from debriefs
+- **Cross-Topic Analysis** - Find connections between different conversation topics
+- **Browser Bookmarklets** - Easy export from Gemini and AIM chat interfaces
+- **Quality Evaluation** - Built-in autorater for debrief quality assessment
 
 ## Quick Start
 

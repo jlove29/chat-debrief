@@ -45,7 +45,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         // If DEBRIEF.md doesn't exist, generate it first
         if !debrief_path.exists() {
-            println!("📝 DEBRIEF.md not found. Generating debrief first...");
+            println!("DEBRIEF.md not found. Generating debrief first...");
             
             // Read all conversation files from the topic directory
             let (existing_debrief, other_contents, _unread_paths) = match processor::read_directory_files(&topic_path) {
@@ -70,7 +70,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         eprintln!("Error writing debrief: {}", e);
                         std::process::exit(1);
                     }
-                    println!("✅ Debrief generated successfully");
+                    println!("Debrief generated successfully");
                     println!();
                 }
                 Err(e) => {
@@ -80,22 +80,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         
-        println!("🔍 Starting async research for topic: {}", topic_name);
+        println!("Starting async research for topic: {}", topic_name);
         println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         
         match researcher::research_and_enhance_debrief(&debrief_path, topic_name).await {
             Ok(_) => {
                 println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-                println!("✅ Research complete!");
+                println!("Research complete!");
             }
             Err(e) => {
-                eprintln!("❌ Error during research: {}", e);
+                eprintln!("Error during research: {}", e);
                 std::process::exit(1);
             }
         }
     } else {
         // Perform cross-pollination analysis
-        println!("🔗 Analyzing cross-topic connections...");
+        println!("Analyzing cross-topic connections...");
         println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         
         match researcher::analyze_cross_topic_connections(data_dir).await {
@@ -103,7 +103,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 if tasks.is_empty() {
                     println!("No cross-pollination opportunities found.");
                 } else {
-                    println!("\n📊 Found {} cross-pollination opportunities:\n", tasks.len());
+                    println!("\nFound {} cross-pollination opportunities:\n", tasks.len());
                     
                     for (i, task) in tasks.iter().enumerate() {
                         println!("{}. {} (Priority: {}/10)", i + 1, task.query, task.priority);
@@ -116,7 +116,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .collect();
                     
                     if !high_priority.is_empty() {
-                        println!("\n🔬 Researching {} high-priority connections...\n", high_priority.len());
+                        println!("\nResearching {} high-priority connections...\n", high_priority.len());
                         
                         for task in high_priority {
                             match researcher::perform_research(&task).await {
@@ -137,10 +137,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
                 
                 println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-                println!("✅ Cross-topic analysis complete!");
+                println!("Cross-topic analysis complete!");
             }
             Err(e) => {
-                eprintln!("❌ Error during analysis: {}", e);
+                eprintln!("Error during analysis: {}", e);
                 std::process::exit(1);
             }
         }

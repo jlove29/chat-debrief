@@ -63,15 +63,15 @@ async fn main() -> io::Result<()> {
 
     // Optionally run async research
     if run_research {
-        println!("\n🔍 Starting async research...");
+        println!("\nStarting async research...");
         let debrief_path = path.join("DEBRIEF.md");
         let topic_name = path.file_name()
             .and_then(|n| n.to_str())
             .unwrap_or("unknown");
         
         match researcher::research_and_enhance_debrief(&debrief_path, topic_name).await {
-            Ok(_) => println!("✅ Research complete!"),
-            Err(e) => eprintln!("⚠️  Research error: {}", e),
+            Ok(_) => println!("Research complete!"),
+            Err(e) => eprintln!("Research error: {}", e),
         }
     }
 
