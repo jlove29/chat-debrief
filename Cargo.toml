@@ -12,7 +12,7 @@ name = "read_files"
 path = "src/main.rs"
 
 [dependencies]
-genai-rs = "0.5.0"
+genai-rs = "0.7.0"
 tokio = { version = "1", features = ["full"] }
 dotenvy = "0.15"
 serde = { version = "1.0", features = ["derive"] }

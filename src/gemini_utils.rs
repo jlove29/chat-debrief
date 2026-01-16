@@ -41,7 +41,7 @@ pub async fn call_gemini_with_schema(
         .create()
         .await?;
     
-    Ok(response.text().unwrap_or_default().to_string())
+    Ok(response.as_text().unwrap_or_default().to_string())
 }
 
 #[cfg(test)]
