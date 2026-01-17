@@ -21,8 +21,13 @@ pub fn read_directory_files(path: &Path) -> io::Result<(String, Vec<String>, Vec
                 continue;
             }
             
-            // Skip files that have already been processed (contain _read in filename)
+            // Skip .DS_Store files (macOS metadata)
             let filename = entry_path.file_name().unwrap().to_string_lossy();
+            if filename == ".DS_Store" {
+                continue;
+            }
+            
+            // Skip files that have already been processed (contain _read in filename)
             if filename.contains("_read") {
                 eprintln!("Skipping already processed file: {}", filename);
                 continue;

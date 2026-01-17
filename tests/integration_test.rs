@@ -34,7 +34,7 @@ fn copy_testdata_file(testdata_dir: &str, filename: &str, target_dir: &Path) {
 /// Helper to run the binary on a directory
 fn run_pipeline(dir: &Path) -> bool {
     let output = Command::new("cargo")
-        .args(&["run", "--", dir.to_str().unwrap()])
+        .args(&["run", "--bin", "read_files", "--", dir.to_str().unwrap()])
         .output()
         .expect("Failed to execute command");
     
@@ -45,6 +45,26 @@ fn run_pipeline(dir: &Path) -> bool {
 fn read_debrief(dir: &Path) -> String {
     let debrief_path = dir.join("DEBRIEF.md");
     fs::read_to_string(&debrief_path).unwrap()
+}
+
+/// Helper to run the binary with --research flag
+fn run_pipeline_with_research(dir: &Path) -> bool {
+    let output = Command::new("cargo")
+        .args(&["run", "--bin", "read_files", "--", dir.to_str().unwrap(), "--research"])
+        .output()
+        .expect("Failed to execute command");
+    
+    output.status.success()
+}
+
+/// Helper to read RESEARCH.md content
+fn read_research(dir: &Path) -> Option<String> {
+    let research_path = dir.join("RESEARCH.md");
+    if research_path.exists() {
+        Some(fs::read_to_string(&research_path).unwrap())
+    } else {
+        None
+    }
 }
 
 
@@ -155,4 +175,66 @@ fn test_integration_hard_drive() {
 fn test_integration_all_directories() {
     test_pipeline_for_directory("hamstring_injury");
     test_pipeline_for_directory("hard_drive");
+}
+
+/// Test the research functionality
+#[tokio::main]
+async fn test_research_for_directory(testdata_dir: &str) {
+    let test_dir = create_temp_dir(&format!("{}_research", testdata_dir));
+    
+    // Step 1: Copy all test files
+    copy_testdata_file(testdata_dir, "1.txt", &test_dir);
+    copy_testdata_file(testdata_dir, "2.txt", &test_dir);
+    copy_testdata_file(testdata_dir, "3.txt", &test_dir);
+    
+    // Step 2: Run the pipeline with --research flag
+    let success = run_pipeline_with_research(&test_dir);
+    assert!(success, "Research pipeline run failed for {}", testdata_dir);
+    
+    // Step 3: Check that DEBRIEF.md exists
+    let debrief_path = test_dir.join("DEBRIEF.md");
+    assert!(debrief_path.exists(), "DEBRIEF.md was not created for {}", testdata_dir);
+    
+    let debrief_content = read_debrief(&test_dir);
+    assert!(!debrief_content.is_empty(), "DEBRIEF.md is empty for {}", testdata_dir);
+    
+    // Step 4: Check that RESEARCH.md exists and has content
+    let research_path = test_dir.join("RESEARCH.md");
+    assert!(research_path.exists(), "RESEARCH.md was not created for {}", testdata_dir);
+    
+    let research_content = read_research(&test_dir).expect("RESEARCH.md should exist");
+    assert!(!research_content.is_empty(), "RESEARCH.md is empty for {}", testdata_dir);
+    assert!(research_content.contains("## Research Insights"), 
+            "RESEARCH.md missing expected header for {}", testdata_dir);
+    assert!(research_content.len() > 200, 
+            "RESEARCH.md content seems too short for {}", testdata_dir);
+    
+    println!("RESEARCH.md for {} ({} bytes):", testdata_dir, research_content.len());
+    println!("First 500 chars: {}\n", &research_content[..research_content.len().min(500)]);
+    
+    // Step 5: Verify DEBRIEF.md does NOT contain research insights
+    assert!(!debrief_content.contains("## Research Insights"),
+            "DEBRIEF.md should not contain research insights for {}", testdata_dir);
+    
+    // Step 6: Cleanup
+    cleanup_dir(&test_dir);
+}
+
+#[test]
+#[ignore] // Ignore by default since this requires API key and makes real API calls
+fn test_research_hamstring_injury() {
+    test_research_for_directory("hamstring_injury");
+}
+
+#[test]
+#[ignore] // Ignore by default since this requires API key and makes real API calls
+fn test_research_hard_drive() {
+    test_research_for_directory("hard_drive");
+}
+
+#[test]
+#[ignore] // Test research on both directories
+fn test_research_all_directories() {
+    test_research_for_directory("hamstring_injury");
+    test_research_for_directory("hard_drive");
 }

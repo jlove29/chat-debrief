@@ -3,6 +3,7 @@ use std::io;
 use std::path::Path;
 
 use read_files::processor::{read_directory_files, process_files, write_debrief, mark_files_as_read};
+use read_files::research_orchestrator;
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
@@ -14,11 +15,14 @@ async fn main() -> io::Result<()> {
 
     // Check if directory path is provided
     if args.len() < 2 {
-        eprintln!("Usage: {} <directory_path>", args[0]);
+        eprintln!("Usage: {} <directory_path> [--research]", args[0]);
+        eprintln!("\nOptions:");
+        eprintln!("  --research    Run async research after processing debrief");
         std::process::exit(1);
     }
 
     let dir_path = &args[1];
+    let run_research = args.len() > 2 && args[2] == "--research";
     let path = Path::new(dir_path);
 
     if !path.exists() {
@@ -36,9 +40,28 @@ async fn main() -> io::Result<()> {
     // Read all files from the directory
     let (debrief_contents, other_contents, unread_file_paths) = read_directory_files(path)?;
 
-    // If there are no new files to process, exit early
+    // If there are no new files to process, check if we should still run research
     if other_contents.is_empty() {
         println!("No new files to process. All files have already been read.");
+        
+        // If --research flag is set and DEBRIEF.md exists, run research anyway
+        if run_research {
+            let debrief_path = path.join("DEBRIEF.md");
+            if debrief_path.exists() {
+                println!("\nRunning research on existing debrief...");
+                let topic_name = path.file_name()
+                    .and_then(|n| n.to_str())
+                    .unwrap_or("unknown");
+                
+                match research_orchestrator::research_and_enhance_debrief(&debrief_path, topic_name).await {
+                    Ok(_) => println!("Research complete!"),
+                    Err(e) => eprintln!("Research error: {}", e),
+                }
+            } else {
+                println!("No DEBRIEF.md found to research.");
+            }
+        }
+        
         return Ok(());
     }
 
@@ -56,6 +79,20 @@ async fn main() -> io::Result<()> {
 
     // Mark the processed files as read
     mark_files_as_read(unread_file_paths)?;
+
+    // Optionally run async research
+    if run_research {
+        println!("\nStarting async research...");
+        let debrief_path = path.join("DEBRIEF.md");
+        let topic_name = path.file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or("unknown");
+        
+        match research_orchestrator::research_and_enhance_debrief(&debrief_path, topic_name).await {
+            Ok(_) => println!("Research complete!"),
+            Err(e) => eprintln!("Research error: {}", e),
+        }
+    }
 
     Ok(())
 }

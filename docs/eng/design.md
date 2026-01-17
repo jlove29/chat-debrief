@@ -179,7 +179,7 @@ Run with: `cargo test --lib`
 End-to-end tests in `tests/integration_test.rs`:
 - Create temporary directories
 - Copy test data from `testdata/`
-- Run full pipeline via `cargo run`
+- Run full pipeline via `cargo run --bin read_files`
 - Verify `DEBRIEF.md` creation and updates
 - Use autorater to validate output quality (score ≥ 6/10)
 - Marked `#[ignore]` due to API calls and runtime
